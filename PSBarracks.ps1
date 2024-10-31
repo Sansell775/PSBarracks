@@ -4,7 +4,9 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $main_form = New-Object System.Windows.Forms.Form
 
-$configContent = Get-Content -path "C:\PSBarracks\config.json" -Raw  | ConvertFrom-Json
+$configFilePath = "C:\PSBarracks\config.json"
+
+$configContent = Get-Content -path $configFilePath -Raw  | ConvertFrom-Json
 
 $folderLocation = $configContent.folderLocation
 
@@ -57,6 +59,13 @@ $settingsButton.Height = 30
 $settingsButton.Add_Click({settingsMenu})
 $settingsButton.Location = "105,425"
 $main_form.Controls.add($settingsButton)
+
+$editDescriptionButton = New-Object System.Windows.Forms.Button
+$editDescriptionButton.text = "Edit Description"
+$editDescriptionButton.width = 80
+$editDescriptionButton.height = 30
+$editDescriptionButton.Add_Click({editDescription})
+$editDescriptionButton.Location = "195, 425"
 
 function run(){
 }
@@ -118,23 +127,37 @@ function listClick(){
         }
 
     $descPanel.Controls.Add($scriptDescriptionLabel)
+
+    if($scriptview.SelectedIndex -ne $null){
+###button for description editing
+    $main_form.Controls.add($editDescriptionButton)
+    }
 }
 
 function browseScriptFolder(){
 
     $folderBrowser = New-Object System.Windows.Forms.FolderBrowserDialog
-    $null = $folderBrowser.ShowDialog()
 
-    if (-Not [String]::IsNullOrWhiteSpace($SelectedPath))
+    if ($folderBrowser.ShowDialog() -eq "OK" -and $folderBrowser.SelectedPath -ne "" -and $folderBrowser.SelectedPath -ne $null)
     {
-        $FolderBrowser.SelectedPath=$SelectedPath
+        $newConfigContent = $folderBrowser.SelectedPath
+        $configContent.FolderLocation = $newConfigContent
+        $newconfigContent = $configContent | ConvertTo-Json -Depth 1
+        Set-Content -Path $configFilePath -Value $newconfigContent
+        $scriptsFolderLabel.Text = "Script Folder:   " + $configContent.FolderLocation
+        $folderLocation = $configContent.FolderLocation
+        $scripts = $null
+        $scripts = @(Get-ChildItem -path $folderLocation -Recurse -filter *.ps1 | select-object -expandproperty Name)
+        foreach ($script in $scripts){
+            $scriptview.items.add($script)
+        }
+        $main_form.Controls.Add($scriptView)
+    }
+    else 
+    {
+    Write-Host "Null/invalid path selected, or user cancelled."    
     }
 
-    if($folderBrowser.ShowDialog() -eq "OK")
-    {
-        $Folder += $FolderBrowser.SelectedPath
-        write-host $folder
-    }
     
 }
 
