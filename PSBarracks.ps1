@@ -102,7 +102,10 @@ function listClick(){
     $descPanel.text = "Description - " + $selectedScriptPath
 
     #gets just the script name; removes the .ps1 extension
-    $scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))
+    #if user clicks empty spot or box when no scripts are populated, a null valued expression error occurs. This try/Catch prevents that
+    
+    Try{$scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))}
+    Catch{Return}
    
         If(Test-Path -Path ($folderLocation + "\" + $scriptName + ".txt"))
         {
