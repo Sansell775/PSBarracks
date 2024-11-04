@@ -42,7 +42,7 @@ $main_form.Controls.Add($descPanel)
 $runButton = New-Object System.Windows.Forms.Button
 $RunButton.text = "Run"
 $runButton.width = 80
-$runButton.Height = 30
+$runButton.Height = 40
 $runbutton.Add_Click({Run})
 $runButton.Location = "15,425"
 $main_form.Controls.add($runButton)
@@ -55,7 +55,7 @@ $scriptDescriptionLabel.location = "10,30"
 $settingsButton = New-Object System.Windows.Forms.Button
 $settingsButton.text = "Settings"
 $settingsButton.width = 80
-$settingsButton.Height = 30
+$settingsButton.Height = 40
 $settingsButton.Add_Click({settingsMenu})
 $settingsButton.Location = "105,425"
 $main_form.Controls.add($settingsButton)
@@ -63,13 +63,41 @@ $main_form.Controls.add($settingsButton)
 $editDescriptionButton = New-Object System.Windows.Forms.Button
 $editDescriptionButton.text = "Edit Description"
 $editDescriptionButton.width = 80
-$editDescriptionButton.height = 30
+$editDescriptionButton.height = 40
 $editDescriptionButton.Add_Click({editDescription})
 $editDescriptionButton.Location = "195, 425"
 
 function run(){
 }
 
+function editDescription(){
+    $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
+
+    $editDescriptionForm = New-Object System.Windows.Forms.Form
+    $editDescriptionForm.Text = "Edit Description"
+    $editDescriptionForm.Width = 400
+    $editDescriptionForm.Height = 450
+    $editDescriptionForm.FormBorderStyle='FixedDialog'
+    $editDescriptionForm.MaximizeBox=$false
+
+
+    $editDescriptionLabel = New-Object System.Windows.Forms.Label
+    $editDescriptionLabel.Text =   $selectedScriptPath + " - Edit Description"
+    $editDescriptionLabel.Width = 390
+    $editDescriptionLabel.Height = 30
+    $editDescriptionLabel.Location = "5,5"
+
+    $editDescriptionTextBox = new-Object System.Windows.Forms.TextBox
+    $editDescriptionTextBox.text = 'No description file found for " ' + $selectedScriptPath + '"'
+    $editDescriptionTextBox.Multiline = $true;
+    $editDescriptionTextBox.Size = New-Object System.Drawing.Size (375, 300)
+    $editDescriptionTextBox.location = New-object System.Drawing.Size(5, 35)
+
+    $editDescriptionForm.Controls.Add($editDescriptionTextBox)
+    $editDescriptionForm.Controls.Add($editDescriptionLabel)
+    $editDescriptionForm.ShowDialog()
+
+}
 
 function settingsMenu(){
     $settings_form = New-Object System.Windows.Forms.Form
@@ -82,20 +110,20 @@ function settingsMenu(){
     $folderSettingsGroupBox = New-Object System.Windows.Forms.GroupBox
     $folderSettingsGroupBox.Text = "Location Settings"
     $folderSettingsGroupBox.Width = 375
-    $folderSettingsGroupBox.Height = 190
+    $folderSettingsGroupBox.Height = 105
     $folderSettingsGroupBox.Location = "5,5"
 
     $scriptsFolderLabel = New-Object System.Windows.Forms.Label
     $scriptsFolderLabel.Text = "Script Folder:   " + $folderLocation
     $scriptsFolderLabel.Location = "15,30"
     $scriptsFolderLabel.width =325
-    $scriptsFolderLabel.Height = 20
+    $scriptsFolderLabel.Height = 50
 
     $changeScriptFolderButton = New-Object System.Windows.Forms.Button
     $changeScriptFolderButton.text = "Browse"
     $changeScriptFolderButton.width = 80
     $changeScriptFolderButton.height = 20
-    $changeScriptFolderButton.Location = "10,55"
+    $changeScriptFolderButton.Location = "10,75"
     $changeScriptFolderButton.Add_Click({browseScriptFolder})
 
     $folderSettingsGroupBox.Controls.Add($changeScriptFolderButton)
