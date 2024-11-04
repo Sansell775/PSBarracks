@@ -129,12 +129,17 @@ $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
     }
     if ($configContent.confirmation -eq $false){
         startRun
-
     }
 
     }
 
 Function startRun(){
+
+if($configContent.runas -eq $true){
+    runAs
+}
+
+Else{
 $runPath = $configContent.FolderLocation + "\" + $selectedscriptPath
 Start-Process powershell.exe -ArgumentList "-NoProfile -File `"$runPath`""
 
@@ -145,12 +150,35 @@ catch {
 #NOTHING
 }
 }
+}
+
+function runAs(){
+
+    $runPath = $configContent.FolderLocation + "\" + $selectedscriptPath
+    $credentials = Get-Credential -Message "Please enter user credentials for script execution."
+    if ($credentials -eq $null -or $credentials -eq ""){
+    runCancel
+    }
+    Else{
+    Start-Process powershell.exe -Credential $credentials -ArgumentList "-NoProfile -File `"$runPath`""
+    $Credentials = $null
+    try {
+        $confirmationForm.Close()
+    }
+    catch {
+    #NOTHING
+    }
+}
+}
 
 
 function runCancel(){
-
-    $confirmationForm.Close()
-
+    try {
+        $confirmationForm.Close()
+    }
+    catch {
+    #NOTHING
+    }
 }
 
 function editDescription(){
