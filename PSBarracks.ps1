@@ -47,7 +47,9 @@ $runButton.width = 80
 $runButton.Height = 40
 $runbutton.Add_Click({Run})
 $runButton.Location = "15,425"
-$main_form.Controls.add($runButton)
+$runButton.Enabled =$false
+
+
 
 $scriptDescriptionLabel = New-Object System.Windows.Forms.Label
 $scriptDescriptionLabel.width = 325
@@ -60,7 +62,7 @@ $settingsButton.width = 80
 $settingsButton.Height = 40
 $settingsButton.Add_Click({settingsMenu})
 $settingsButton.Location = "105,425"
-$main_form.Controls.add($settingsButton)
+
 
 $editDescriptionButton = New-Object System.Windows.Forms.Button
 $editDescriptionButton.text = "Edit Description"
@@ -68,6 +70,7 @@ $editDescriptionButton.width = 80
 $editDescriptionButton.height = 40
 $editDescriptionButton.Add_Click({editDescription})
 $editDescriptionButton.Location = "195, 425"
+$editDescriptionButton.Enabled = $false
 
 $aboutButton = New-Object System.Windows.Forms.Button
 $aboutButton.text = "About"
@@ -79,13 +82,13 @@ $aboutButton.Location = "285,425"
 
 
 $main_form.Controls.Add($aboutButton)
+$main_form.Controls.add($settingsButton)
+$main_form.Controls.add($EditDescriptionButton)
+$main_form.Controls.Add($runButton)
 
 function run(){
 $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
   Write-Host $selectedScriptPath
-   
-   if ($selectedScriptPath -ne "" -and $null -ne $selectedScriptPath){
-
    
     if ($configContent.confirmation -eq $true){
         #Write-Host $True
@@ -96,13 +99,20 @@ $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
         $confirmationForm.FormBorderStyle='FixedDialog'
         $confirmationForm.MaximizeBox=$false
 
-        
-
         $confirmLabel = New-Object System.Windows.Forms.Label
         $confirmLabel.Text = ("Run " + $selectedScriptPath + " ?")
-        $confirmLabel.Location = "91, 72"
+        $confirmLabel.Location = "91, 32"
         $confirmLabel.Autosize = $true
         $confirmLabel.Font = [system.drawing.font]'$confirmLabel.Font.Name$confirmLabel.Font.Size, style=Bold'
+
+        $confirmButton = New-Object System.Windows.Forms.Button
+        $confirmButton.Text = "Yes"
+        $confirmButton.Location = "15,150"
+        $confirmButton.width = 80
+        $confirmbutton.Height = 80
+
+        $confirmationForm.Controls.Add($confirmButton)
+
         $confirmationForm.Controls.Add($confirmLabel)
         
         $confirmationForm.ShowDialog()
@@ -113,9 +123,6 @@ $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
     }
 
     }
-
-
-}
 
 function editDescription(){
     $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
@@ -195,6 +202,23 @@ If(Test-Path -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt"))
         Set-Content -path ($folderLocation + "\Descriptions\" + $scriptName + ".txt") -value $editDescriptionTextBox.Text
         
 Write-Host "Description Saved"
+
+Try{$scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))}
+Catch{Return}
+
+    If(Test-Path -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt"))
+    {
+
+    $scriptDescriptionLabel.text= Get-Content -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
+
+    }
+    Else
+    {
+    $scriptDescriptionLabel.text = 'No description file found for " ' + $scriptName + '"'
+    }
+
+$descPanel.Controls.Add($scriptDescriptionLabel)
+
 $editDescriptionForm.Close()
         }
 Else{
@@ -312,7 +336,8 @@ function listClick(){
 
     if($scriptview.SelectedIndex -ne $null){
 ###button for description editing
-    $main_form.Controls.add($editDescriptionButton)
+        $runButton.enabled = $true
+        $editDescriptionButton.enabled = $true
     }
 }
 
