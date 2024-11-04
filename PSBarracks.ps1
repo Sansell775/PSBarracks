@@ -81,6 +81,40 @@ $aboutButton.Location = "285,425"
 $main_form.Controls.Add($aboutButton)
 
 function run(){
+$selectedScriptPath = $scripts[$scriptview.SelectedIndex]
+  Write-Host $selectedScriptPath
+   
+   if ($selectedScriptPath -ne "" -and $null -ne $selectedScriptPath){
+
+   
+    if ($configContent.confirmation -eq $true){
+        #Write-Host $True
+        $confirmationForm = New-Object System.Windows.Forms.Form
+        $confirmationForm.text = "Confirmation"
+        $confirmationForm.Width = 350
+        $confirmationForm.Height = 200
+        $confirmationForm.FormBorderStyle='FixedDialog'
+        $confirmationForm.MaximizeBox=$false
+
+        
+
+        $confirmLabel = New-Object System.Windows.Forms.Label
+        $confirmLabel.Text = ("Run " + $selectedScriptPath + " ?")
+        $confirmLabel.Location = "91, 72"
+        $confirmLabel.Autosize = $true
+        $confirmLabel.Font = [system.drawing.font]'$confirmLabel.Font.Name$confirmLabel.Font.Size, style=Bold'
+        $confirmationForm.Controls.Add($confirmLabel)
+        
+        $confirmationForm.ShowDialog()
+    }
+    if ($configContent.confirmation -eq $false){
+        #Write-Host $false
+
+    }
+
+    }
+
+
 }
 
 function editDescription(){
@@ -201,11 +235,16 @@ function settingsMenu(){
     $confirmRunCheckBox.Text = "Enable Confirmation Message"
     $confirmRunCheckBox.AutoSize = $true
     $confirmRunCheckBox.Location = "5,20"
+    $confirmRunCheckBox.Add_Click({confirmToggle})
+    $confirmRunCheckBox.Checked = $configContent.confirmation
 
     $runAsCheckBox = New-Object System.Windows.Forms.CheckBox
     $runAsCheckBox.Text = "Run As Another User"
     $runAsCheckBox.AutoSize = $true
     $runAsCheckBox.Location = "5,45"
+    $runAsCheckBox.Checked = 
+    $runAsCheckBox.Add_Click({runAsToggle})
+    $runAsCheckBox.Checked = $configContent.runas
 
 
     $scriptsFolderLabel = New-Object System.Windows.Forms.Label
@@ -230,6 +269,21 @@ function settingsMenu(){
     $settings_form.Controls.Add($toggleSettingsGroupBox)
     $settings_form.Controls.Add($folderSettingsGroupBox)
     $Settings_form.ShowDialog()
+}
+
+function runAsToggle(){
+    $newRunAsContent = $runAsCheckbox.Checked
+    $configContent.runas = $newRunAsContent
+    $newRunAsContent = $configContent | ConvertTo-Json -Depth 2
+    Set-Content -Path $configFilePath -Value $newRunAsContent
+}
+
+
+function confirmToggle(){
+    $newConfirmationContent = $ConfirmRunCheckbox.Checked
+    $configContent.confirmation = $newConfirmationContent
+    $newConfirmationContent = $configContent | ConvertTo-Json -Depth 3
+    Set-Content -Path $configFilePath -Value $newConfirmationContent
 }
 
 function listClick(){
