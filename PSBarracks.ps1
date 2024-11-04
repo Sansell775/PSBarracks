@@ -146,7 +146,7 @@ function browseScriptFolder(){
         Set-Content -Path $configFilePath -Value $newconfigContent
         $scriptsFolderLabel.Text = "Script Folder:   " + $configContent.FolderLocation
         $folderLocation = $configContent.FolderLocation
-        $scripts = $null
+        $scriptview.Items.Clear()
         $scripts = @(Get-ChildItem -path $folderLocation -Recurse -filter *.ps1 | select-object -expandproperty Name)
         foreach ($script in $scripts){
             $scriptview.items.add($script)
