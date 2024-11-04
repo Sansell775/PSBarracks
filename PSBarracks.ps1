@@ -86,12 +86,30 @@ function editDescription(){
     $editDescriptionLabel.Width = 390
     $editDescriptionLabel.Height = 30
     $editDescriptionLabel.Location = "5,5"
+    #$editDescriptionLabel.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Bold'
+
 
     $editDescriptionTextBox = new-Object System.Windows.Forms.TextBox
-    $editDescriptionTextBox.text = 'No description file found for " ' + $selectedScriptPath + '"'
     $editDescriptionTextBox.Multiline = $true;
     $editDescriptionTextBox.Size = New-Object System.Drawing.Size (375, 300)
     $editDescriptionTextBox.location = New-object System.Drawing.Size(5, 35)
+
+
+    Try{$scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))}
+    Catch{Return}
+   
+        If(Test-Path -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt"))
+        {
+
+        $editDescriptionTextBox.text= Get-Content -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
+        Write-host $folderLocation
+        }
+        Else
+        {
+        $editDescriptionTextBox.text = 'No description file found for " ' + $scriptName + '"'
+        Write-host $folderLocation
+        }
+
 
     $editDescriptionForm.Controls.Add($editDescriptionTextBox)
     $editDescriptionForm.Controls.Add($editDescriptionLabel)
@@ -144,14 +162,18 @@ function listClick(){
     Try{$scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))}
     Catch{Return}
    
-        If(Test-Path -Path ($folderLocation + "\" + $scriptName + ".txt"))
+        If(Test-Path -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt"))
         {
 
-        $scriptDescriptionLabel.text= Get-Content -Path ($folderLocation + "\" + $scriptName + ".txt")
+        $scriptDescriptionLabel.text= Get-Content -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
+        Write-host ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
+
         }
         Else
         {
         $scriptDescriptionLabel.text = 'No description file found for " ' + $scriptName + '"'
+        Write-host ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
+
         }
 
     $descPanel.Controls.Add($scriptDescriptionLabel)
