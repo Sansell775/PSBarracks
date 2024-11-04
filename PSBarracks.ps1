@@ -91,7 +91,7 @@ $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
   Write-Host $selectedScriptPath
    
     if ($configContent.confirmation -eq $true){
-        #Write-Host $True
+
         $confirmationForm = New-Object System.Windows.Forms.Form
         $confirmationForm.text = "Confirmation"
         $confirmationForm.Width = 350
@@ -107,22 +107,51 @@ $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
 
         $confirmButton = New-Object System.Windows.Forms.Button
         $confirmButton.Text = "Yes"
-        $confirmButton.Location = "15,150"
+        $confirmButton.Location = "40,80"
         $confirmButton.width = 80
-        $confirmbutton.Height = 80
+        $confirmbutton.Height = 40
+        $confirmButton.Add_Click({startRun})
+
+        $runCancelButton = New-Object System.Windows.Forms.Button
+        $runCancelButton.Text = "cancel"
+        $runCancelButton.Location = "175,80"
+        $runCancelButton.width = 80
+        $runCancelButton.Height = 40
+        $runCancelButton.Add_Click({runCancel})
 
         $confirmationForm.Controls.Add($confirmButton)
 
         $confirmationForm.Controls.Add($confirmLabel)
+
+        $confirmationForm.Controls.Add($runCancelButton)
         
         $confirmationForm.ShowDialog()
     }
     if ($configContent.confirmation -eq $false){
-        #Write-Host $false
+        startRun
 
     }
 
     }
+
+Function startRun(){
+$runPath = $configContent.FolderLocation + "\" + $selectedscriptPath
+Start-Process powershell.exe -ArgumentList "-NoProfile -File `"$runPath`""
+
+try {
+    $confirmationForm.Close()
+}
+catch {
+#NOTHING
+}
+}
+
+
+function runCancel(){
+
+    $confirmationForm.Close()
+
+}
 
 function editDescription(){
     $selectedScriptPath = $scripts[$scriptview.SelectedIndex]
