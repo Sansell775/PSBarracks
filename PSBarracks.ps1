@@ -30,6 +30,8 @@ foreach ($script in $scripts){
     $scriptview.items.add($script)
 }
 
+
+
 $main_form.Controls.Add($scriptView)
 
 $descPanel = New-Object System.Windows.Forms.GroupBox
@@ -67,6 +69,17 @@ $editDescriptionButton.height = 40
 $editDescriptionButton.Add_Click({editDescription})
 $editDescriptionButton.Location = "195, 425"
 
+$aboutButton = New-Object System.Windows.Forms.Button
+$aboutButton.text = "About"
+$aboutButton.Width = 80
+$aboutButton.Height = 40
+$aboutButton.Add_Click({about})
+$aboutButton.Location = "285,425"
+
+
+
+$main_form.Controls.Add($aboutButton)
+
 function run(){
 }
 
@@ -76,7 +89,7 @@ function editDescription(){
     $editDescriptionForm = New-Object System.Windows.Forms.Form
     $editDescriptionForm.Text = "Edit Description"
     $editDescriptionForm.Width = 400
-    $editDescriptionForm.Height = 450
+    $editDescriptionForm.Height = 250
     $editDescriptionForm.FormBorderStyle='FixedDialog'
     $editDescriptionForm.MaximizeBox=$false
 
@@ -91,8 +104,23 @@ function editDescription(){
 
     $editDescriptionTextBox = new-Object System.Windows.Forms.TextBox
     $editDescriptionTextBox.Multiline = $true;
-    $editDescriptionTextBox.Size = New-Object System.Drawing.Size (375, 300)
+    $editDescriptionTextBox.Size = New-Object System.Drawing.Size (375, 125)
     $editDescriptionTextBox.location = New-object System.Drawing.Size(5, 35)
+
+    $saveDescriptionButton = New-object System.Windows.Forms.Button
+    $saveDescriptionButton.Add_Click({saveDescription})
+    $saveDescriptionButton.Text = "Save"
+    $saveDescriptionButton.width = 80
+    $saveDescriptionButton.Height = 40
+    $saveDescriptionButton.Location = "5, 165"
+
+    $cancelDescriptionButton = New-object System.Windows.Forms.Button
+    $cancelDescriptionButton.Add_Click({descriptionCancel})
+    $cancelDescriptionButton.Text = "Cancel"
+    $cancelDescriptionButton.width = 80
+    $cancelDescriptionButton.Height = 40
+    $cancelDescriptionButton.Location = "95, 165"
+    
 
 
     Try{$scriptName=$selectedScriptPath.substring(0,$selectedScriptPath.IndexOf('.'))}
@@ -111,15 +139,43 @@ function editDescription(){
 
     $editDescriptionForm.Controls.Add($editDescriptionTextBox)
     $editDescriptionForm.Controls.Add($editDescriptionLabel)
+    $editDescriptionForm.Controls.Add($saveDescriptionButton)
+    $editDescriptionForm.Controls.Add($cancelDescriptionButton)
     $editDescriptionForm.ShowDialog()
 
 }
+
+
+function descriptionCancel(){
+
+    $editDescriptionForm.Close()
+
+}
+
+function saveDescription(){
+Write-Host "Saving. ."
+
+If(Test-Path -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt"))
+        {
+
+        Set-Content -path ($folderLocation + "\Descriptions\" + $scriptName + ".txt") -value $editDescriptionTextBox.Text
+        
+Write-Host "Description Saved"
+$editDescriptionForm.Close()
+        }
+Else{
+New-Item -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt") -itemType File -value $editDescriptionTextBox.Text
+Write-Host "New .txt file created for " + $scriptName
+$editDescriptionForm.Close()
+}
+}
+
 
 function settingsMenu(){
     $settings_form = New-Object System.Windows.Forms.Form
     $settings_form.Text ='Settings'
     $settings_form.Width = 400
-    $settings_form.Height = 450
+    $settings_form.Height = 250
     $settings_form.FormBorderStyle='FixedDialog'
     $settings_form.MaximizeBox=$false
 
@@ -128,6 +184,29 @@ function settingsMenu(){
     $folderSettingsGroupBox.Width = 375
     $folderSettingsGroupBox.Height = 105
     $folderSettingsGroupBox.Location = "5,5"
+
+    $folderSettingsGroupBox = New-Object System.Windows.Forms.GroupBox
+    $folderSettingsGroupBox.Text = "Location Settings"
+    $folderSettingsGroupBox.Width = 375
+    $folderSettingsGroupBox.Height = 105
+    $folderSettingsGroupBox.Location = "5,5"
+
+    $toggleSettingsGroupBox = New-Object System.Windows.Forms.GroupBox
+    $toggleSettingsGroupBox.Text = "Script Run Settings"
+    $toggleSettingsGroupBox.width = 375
+    $toggleSettingsGroupBox.Height = 80
+    $toggleSettingsGroupBox.Location = "5,115"
+
+    $confirmRunCheckBox = New-Object System.Windows.Forms.CheckBox
+    $confirmRunCheckBox.Text = "Enable Confirmation Message"
+    $confirmRunCheckBox.AutoSize = $true
+    $confirmRunCheckBox.Location = "5,20"
+
+    $runAsCheckBox = New-Object System.Windows.Forms.CheckBox
+    $runAsCheckBox.Text = "Run As Another User"
+    $runAsCheckBox.AutoSize = $true
+    $runAsCheckBox.Location = "5,45"
+
 
     $scriptsFolderLabel = New-Object System.Windows.Forms.Label
     $scriptsFolderLabel.Text = "Script Folder:   " + $folderLocation
@@ -145,6 +224,10 @@ function settingsMenu(){
     $folderSettingsGroupBox.Controls.Add($changeScriptFolderButton)
     $folderSettingsGroupBox.Controls.Add($scriptsFolderLabel)
 
+    $toggleSettingsGroupBox.Controls.Add($confirmRunCheckBox)
+    $toggleSettingsGroupBox.Controls.Add($runAsCheckBox)
+
+    $settings_form.Controls.Add($toggleSettingsGroupBox)
     $settings_form.Controls.Add($folderSettingsGroupBox)
     $Settings_form.ShowDialog()
 }
@@ -203,9 +286,37 @@ function browseScriptFolder(){
     Write-Host "Null/invalid path selected, or user cancelled."    
     }
 
-    
+
 }
 
+function about(){
 
+    $aboutForm = New-Object System.Windows.Forms.Form
+    $aboutForm.Text = "About"
+    $aboutForm.width = 375
+    $aboutForm.Height = 200
+    $aboutForm.FormBorderStyle='FixedDialog'
+
+    $aboutGroupBox = New-Object System.Windows.Forms.GroupBox
+    $aboutGroupBox.Text = "About"
+    $aboutGroupBox.Width = 345
+    $aboutGroupBox.Height = 265
+    $aboutGroupBox.Location = "5,5"
+    $aboutGroupBox.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Bold'
+
+    $aboutLabel = New-Object System.Windows.Forms.label
+    $aboutLabel.Text = "PSBarracks is a simple script that provides a GUI interface to view/organize your PS1 Scripts."
+    $aboutlabel.AutoSize = $false
+    $aboutLabel.size = "315, 240"
+    $aboutLabel.Location = "15,15"
+    $aboutLabel.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Regular'
+
+
+    $aboutGroupBox.Controls.Add($aboutLabel)
+    $aboutForm.Controls.Add($aboutGroupBox)
+    
+    $aboutForm.ShowDialog()
+    
+    }
 
 $main_form.ShowDialog()
