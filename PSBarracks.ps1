@@ -102,12 +102,10 @@ function editDescription(){
         {
 
         $editDescriptionTextBox.text= Get-Content -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
-        Write-host $folderLocation
         }
         Else
         {
         $editDescriptionTextBox.text = 'No description file found for " ' + $scriptName + '"'
-        Write-host $folderLocation
         }
 
 
@@ -166,14 +164,11 @@ function listClick(){
         {
 
         $scriptDescriptionLabel.text= Get-Content -Path ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
-        Write-host ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
 
         }
         Else
         {
         $scriptDescriptionLabel.text = 'No description file found for " ' + $scriptName + '"'
-        Write-host ($folderLocation + "\Descriptions\" + $scriptName + ".txt")
-
         }
 
     $descPanel.Controls.Add($scriptDescriptionLabel)
