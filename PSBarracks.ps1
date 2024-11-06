@@ -426,6 +426,10 @@ function browseScriptFolder(){
 }
 
 function about(){
+    $currentDirectory = Get-Location
+
+    $Licensepath= Join-Path -Path $currentDirectory -ChildPath "\license"
+    $readMePath= Join-Path -Path $currentDirectory -ChildPath "\readme.md"
 
     $aboutForm = New-Object System.Windows.Forms.Form
     $aboutForm.Text = "About"
@@ -443,12 +447,35 @@ function about(){
     $aboutLabel = New-Object System.Windows.Forms.label
     $aboutLabel.Text = "PSBarracks is a simple script that provides a GUI interface to view/organize your PS1 Scripts."
     $aboutlabel.AutoSize = $false
-    $aboutLabel.size = "315, 240"
-    $aboutLabel.Location = "15,15"
+    $aboutLabel.size = "315, 40"
+    $aboutLabel.Location = "15,30"
     $aboutLabel.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Regular'
 
+    $readMeButton = New-Object System.Windows.Forms.Button
+    $readMeButton.Text ="View ReadMe"
+    $readMeButton.size = "80,40"
+    $readMeButton.Location = "15,80"
+    $readMeButton.Add_Click({Start-Process $readMePath})
 
+    $licenseButton = New-Object System.Windows.Forms.Button
+    $licenseButton.Text ="View License"
+    $licenseButton.size = "80,40"
+    $licenseButton.Location = "100,80"
+    $licenseButton.Add_Click({Start-Process $licensePath})
+
+    $gitHubButton = New-Object System.Windows.Forms.Button
+    $gitHubButton.Text ="View GitHub"
+    $gitHubButton.size = "140,40"
+    $gitHubButton.Location = "185,80"
+    $gitHubButton.BackColor = [System.Drawing.Color]::White
+    $gitHubButton.add_mouseEnter({$gitHubButton.BackColor = [System.Drawing.Color]::LightCyan})
+    $gitHubButton.add_mouseLeave({$gitHubButton.BackColor = [System.Drawing.Color]::White})
+    $gitHubButton.Add_Click({[System.Diagnostics.Process]::Start("https://github.com/Sansell775/PSBarracks")})
+
+    $aboutGroupBox.Controls.Add($gitHubButton)
+    $aboutGroupBox.Controls.Add($licenseButton)
     $aboutGroupBox.Controls.Add($aboutLabel)
+    $aboutGroupBox.Controls.Add($readMeButton)
     $aboutForm.Controls.Add($aboutGroupBox)
     
     $aboutForm.ShowDialog()
