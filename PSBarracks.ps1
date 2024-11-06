@@ -1,6 +1,9 @@
 Add-Type -AssemblyName System.Windows.Forms
 [System.Windows.Forms.Application]::EnableVisualStyles()
 
+#utf8 encoding for emoji support
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 
 $main_form = New-Object System.Windows.Forms.Form
 
@@ -430,26 +433,33 @@ function about(){
 
     $Licensepath= Join-Path -Path $currentDirectory -ChildPath "\license"
     $readMePath= Join-Path -Path $currentDirectory -ChildPath "\readme.md"
+    $logoPath = Join-Path -Path $currentDirectory -ChildPath "psbarrackslogo1.png"
 
     $aboutForm = New-Object System.Windows.Forms.Form
     $aboutForm.Text = "About"
-    $aboutForm.width = 375
+    $aboutForm.width = 600
     $aboutForm.Height = 200
     $aboutForm.FormBorderStyle='FixedDialog'
+
+    $logoPictureBox = New-Object System.Windows.Forms.PictureBox
+    $logoPictureBox.location = "25,-25"
+    $logoPictureBox.Size ="180,180"
+    $logoPictureBox.SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::Zoom
+    $logoPictureBox.Image = [System.Drawing.Image]::FromFile($logoPath)
 
     $aboutGroupBox = New-Object System.Windows.Forms.GroupBox
     $aboutGroupBox.Text = "About"
     $aboutGroupBox.Width = 345
-    $aboutGroupBox.Height = 265
-    $aboutGroupBox.Location = "5,5"
+    $aboutGroupBox.Height = 145
+    $aboutGroupBox.Location = "230,5"
     $aboutGroupBox.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Bold'
 
     $aboutLabel = New-Object System.Windows.Forms.label
+    $aboutLabel.Font = New-Object System.Drawing.Font("Segoe UI Empoji",8)
     $aboutLabel.Text = "PSBarracks is a simple script that provides a GUI interface to view/organize your PS1 Scripts."
     $aboutlabel.AutoSize = $false
     $aboutLabel.size = "315, 40"
     $aboutLabel.Location = "15,30"
-    $aboutLabel.Font = [system.drawing.font]'$editDescriptionLabel.Font.Name$editDescriptionLabel.Font.Size, style=Regular'
 
     $readMeButton = New-Object System.Windows.Forms.Button
     $readMeButton.Text ="View ReadMe"
@@ -476,8 +486,10 @@ function about(){
     $aboutGroupBox.Controls.Add($licenseButton)
     $aboutGroupBox.Controls.Add($aboutLabel)
     $aboutGroupBox.Controls.Add($readMeButton)
-    $aboutForm.Controls.Add($aboutGroupBox)
     
+    $aboutForm.Controls.Add($aboutGroupBox)
+    $aboutForm.Controls.Add($logoPictureBox)
+
     $aboutForm.ShowDialog()
     
     }
